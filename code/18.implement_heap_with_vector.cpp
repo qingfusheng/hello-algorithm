@@ -6,6 +6,7 @@ private:
 	vector<int> value;
 public:
 	MaxHeap(vector<int>nums) {
+		// 这样的做法似乎要比单个元素push更加有效一些
 		value = nums;
 		for (int i = parent(size() - 1); i >= 0; i--)
 			siftDown(i);

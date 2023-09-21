@@ -3,7 +3,8 @@ using namespace std;
 int a[7] = {1,2,3,4,5,6,7};
 int erfen(int left, int right, int value) {
 	while (left<=right) {
-		int mid = (left+right+1)/2;
+		// int mid = (left+right+1)/2; 
+		int mid = left+(right-left)/2;
 		if (a[mid] == value) {
 			return mid;
 			break;
