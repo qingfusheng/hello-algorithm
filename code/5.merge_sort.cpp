@@ -29,7 +29,7 @@ void merge(vector<int>& nums, int left, int mid, int right) {
     int rightStart = mid + 1 - left, rightEnd = right - left;
 
     cout <<"leftStart:"<< leftStart << ", leftEnd:" << leftEnd << endl;
-    cout <<"rightStart"<< rightStart << ", rightEnd:" << rightEnd << endl;
+    cout <<"rightStart:"<< rightStart << ", rightEnd:" << rightEnd << endl;
 
     // i, j 分别指向左子数组、右子数组的首元素
     int i = leftStart, j = rightStart;
