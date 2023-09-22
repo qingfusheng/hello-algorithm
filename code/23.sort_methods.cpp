@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<algorithm>
+#include<iomanip>
 #define leftChild(i) 2 * i + 1
 #define rightChild(i) 2 * i + 2
 #define parent(i) (i - 1)/2
@@ -183,29 +184,86 @@ void HeapSort(vector<int>& nums) {
 		siftDown(nums, i, 0);
 	}
 }
-void BucketsSort(vector<int>& nums) {
+/* 桶排序 */
+// 这里的桶排序针对的是[0,1)的浮点数
+void bucketSort(vector<float>& nums) {
+	// 初始化 k = n/2 个桶，预期向每个桶分配 2 个元素
 	int k = nums.size() / 2;
-	vector<vector<int>> buckets(k);
-	for (int num : nums) {
+	vector<vector<float>> buckets(k);
+	// 1. 将数组元素分配到各个桶中
+	for (float num : nums) {
+		// 输入数据范围 [0, 1)，使用 num * k 映射到索引范围 [0, k-1]
 		int i = num * k;
+		// 将 num 添加进桶 bucket_idx
 		buckets[i].push_back(num);
 	}
 	// 2. 对各个桶执行排序
-	for (vector<int>& bucket : buckets) {
+	for (vector<float>& bucket : buckets) {
 		// 使用内置排序函数，也可以替换成其他排序算法
 		sort(bucket.begin(), bucket.end());
 	}
 	// 3. 遍历桶合并结果
 	int i = 0;
-	for (vector<int>& bucket : buckets) {
-		for (int num : bucket) {
+	for (vector<float>& bucket : buckets) {
+		for (float num : bucket) {
 			nums[i++] = num;
 		}
 	}
 }
+// 计数排序，也是用空间换时间的排序方法，适用于数据量大且数据范围小的情况（正整数
+void countingSortNaive(vector<int> &nums) {
+	int m = 0;
+	for (int num : nums)
+		m = max(m, num);
+	vector<int> count_list(m + 1, 0);
+	for (int num : nums)
+		count_list[num]++;
+	int index = 0;
+	for (int i = 0; i <= m; i++)
+	{
+		for (int j = 0; j < count_list[i]; j++)
+			nums[index++] = i;
+	}
+}
+/* 计数排序 */
+// 完整实现，可排序对象，并且是稳定排序
+// 这个排序相比于Naive的区别是，本排序从首先使用前缀和的方式构建counter，然后对nums从后到前进行遍历（以保持其稳定性），
+// 通过counter就可以确定每个数字对应在res中的位置
+void countingSort(vector<int>& nums) {
+	// 1. 统计数组最大元素 m
+	int m = 0;
+	for (int num : nums) {
+		m = max(m, num);
+	}
+	// 2. 统计各数字的出现次数
+	// counter[num] 代表 num 的出现次数
+	vector<int> counter(m + 1, 0);
+	for (int num : nums) {
+		counter[num]++;
+	}
+	// 3. 求 counter 的前缀和，将“出现次数”转换为“尾索引”
+	// 即 counter[num]-1 是 num 在 res 中最后一次出现的索引
+	for (int i = 0; i < m; i++) {
+		counter[i + 1] += counter[i];
+	}
+	cout << "Counter:" << endl;
+	view_vector(counter);
+	// 4. 倒序遍历 nums ，将各元素填入结果数组 res
+	// 初始化数组 res 用于记录结果
+	int n = nums.size();
+	vector<int> res(n);
+	for (int i = n - 1; i >= 0; i--) {
+		int num = nums[i];
+		res[counter[num] - 1] = num; // 将 num 放置到对应索引处
+		counter[num]--;              // 令前缀和自减 1 ，得到下次放置 num 的索引
+	}
+	// 使用结果数组 res 覆盖原数组 nums
+	nums = res;
+}
+
 
 int main() {
-	vector<int> nums = { 5,4,7,1,9,2,8,3,6,0 };
+	vector<int> nums = { 5,4,7,1,9,2,8,3,6,2,1,9,4 };
 	//view_vector(nums);
 	//choose_sort(nums);
 	//BubbleSort(nums);
@@ -214,6 +272,6 @@ int main() {
 	//QuickSort_TailRecure(nums, 0, nums.size() - 1);
 	//MergeSort(nums, 0, nums.size() - 1);
 	//HeapSort(nums);
-	BucketsSort(nums);
+	countingSort(nums);
 	view_vector(nums);
 }
