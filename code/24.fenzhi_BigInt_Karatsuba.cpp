@@ -102,7 +102,38 @@ public:
         os << pre_signal << obj.value;
         return os;
     }
-    string value2() {
+    // 乘法使用Karatsuba算法，可以实现大整数的乘法（考虑负号）
+    BigInt operator * (const BigInt& x) const {
+        /*bool t_signal = signal == x.signal;*/
+        string pre_signal = signal == x.signal ? "" : "-";
+        int len1 = value.length();
+        int len2 = x.value.length();
+        if (len1 == 0 || len2 == 0 || value == "0" || x.value == "0") {
+            return BigInt("0");
+        }
+        if (len1 <= 2 || len2 <= 2) {
+            return BigInt(to_string(stoll(value) * stoll(x.value)));
+        }
+        int mid = max(len1, len2) / 2;
+        // 这里应该从低位到高位划分，而不是从高位到低位，才能保证高位和10的幂的一致性。若选择第二种，则需要先把字符串reverse
+        // 这里的分割使用BigInt内部定义的substr会报错，原因未知，因此改为字符串substr后转为BigInt
+        BigInt high1 = BigInt(value.substr(0, len1 - mid));
+        BigInt low1 = BigInt(value.substr(len1 - mid, len1));
+        BigInt high2 = BigInt(x.value.substr(0, len2 - mid));
+        BigInt low2 = BigInt(x.value.substr(len2 - mid, len2));
+        cout << "h1h2l1l2:" << high1 << "," << low1 << "," << high2 << "," << low2 << endl;
+        BigInt z0 = low1 * low2;
+        BigInt z2 = high1 * high2;
+        BigInt temp1 = high1 + low1;
+        BigInt temp2 = high2 + low2;
+        BigInt z1 = temp1 * temp2;
+        cout << "temp1:temp2:z1:" << temp1 << " " << temp2 << "," << z1 << endl;
+        z1 = z1 - z0 - z2;
+        cout << "z0:z1:z2:" << z0 << "," << z1 << "," << z2 << endl;
+        BigInt result = BigInt(z2.value + string(mid * 2, '0')) + BigInt(z1.value + string(mid, '0')) + z0;
+        return result;
+    }
+    /*string value2() {
         string pre_signal = signal ? "" : "-";
         string result = pre_signal + value;
         return result;
@@ -110,7 +141,10 @@ public:
     bool signal2() {
         return signal;
     }
-    BigInt substr(int m, int n){
+    long long to_long() {
+        return stoll(value);
+    }
+    BigInt substr(int m, int n) {
         BigInt result = *this;
         result.value = result.value.substr(m, n);
         return result;
@@ -119,38 +153,39 @@ public:
         BigInt result = *this;
         result.value = result.value.substr(n);
         return result;
-    }
+    }*/
 };
 
-BigInt multi(BigInt &num1, BigInt &num2) {
-    bool signal = num1.signal2() == num2.signal2();
-    string pre_signal = signal ? "" : "-";
-    int len1 = num1.length();
-    int len2 = num2.length();
-    if (len1 == 0 || len2 == 0 || num1 == BigInt("0") || num2 == BigInt("0")) {
-        return BigInt("0");
-    }
-    string value1 = num1.value2();
-    string value2 = num2.value2();
-    if (len1 <= 2 || len2 <= 2) {
-        return BigInt(to_string(stoll(value1) * stoll(value2)));
-    }
-    int mid = max(len1, len2) / 2;
-    BigInt high1 = num1.substr(0, mid).abs();
-    BigInt low1 = num1.substr(mid).abs();
-    BigInt high2 = num2.substr(0, mid).abs();
-    BigInt low2 = num2.substr(mid).abs();
-    cout <<"h1h2l1l2:" << high1 << "," << low1 << "," << high2 << "," << low2 << endl;
-    BigInt z0 = multi(low1, low2);
-    BigInt z2 = multi(high1, high2);
-    BigInt temp1 = high1 + low1;
-    BigInt temp2 = high2 + low2;
-    BigInt z1 = multi(temp1, temp2);
-    z1 = z1 - z0 - z2;
-    cout << "z0:z1:z2:" << z0 << "," << z1 << "," << z2 << endl;
-    BigInt result = BigInt(z2.value2() + string(mid * 2, '0')) + BigInt(z1.value2() + string(mid, '0')) + z0;
-    return result;
-}
+// 将乘法内嵌到了struct内部
+//BigInt multi(BigInt& num1, BigInt& num2) {
+//    bool signal = num1.signal2() == num2.signal2();
+//    string pre_signal = signal ? "" : "-";
+//    int len1 = num1.length();
+//    int len2 = num2.length();
+//    if (len1 == 0 || len2 == 0 || num1 == BigInt("0") || num2 == BigInt("0")) {
+//        return BigInt("0");
+//    }
+//    if (len1 <= 2 || len2 <= 2) {
+//        return BigInt(to_string(num1.to_long() * num2.to_long()));
+//    }
+//    int mid = max(len1, len2) / 2;
+//    // 这里应该从低位到高位划分，而不是从高位到低位，才能保证高位和10的幂的一致性。若选择第二种，则需要先把字符串reverse
+//    BigInt high1 = num1.substr(0, len1 - mid).abs();
+//    BigInt low1 = num1.substr(len1 - mid, len1).abs();
+//    BigInt high2 = num2.substr(0, len2 - mid).abs();
+//    BigInt low2 = num2.substr(len2 - mid, len2).abs();
+//    cout << "h1h2l1l2:" << high1 << "," << low1 << "," << high2 << "," << low2 << endl;
+//    BigInt z0 = multi(low1, low2);
+//    BigInt z2 = multi(high1, high2);
+//    BigInt temp1 = high1 + low1;
+//    BigInt temp2 = high2 + low2;
+//    BigInt z1 = multi(temp1, temp2);
+//    cout << "temp1:temp2:z1:" << temp1 << " " << temp2 << "," << z1 << endl;
+//    z1 = z1 - z0 - z2;
+//    cout << "z0:z1:z2:" << z0 << "," << z1 << "," << z2 << endl;
+//    BigInt result = BigInt(z2.value2() + string(mid * 2, '0')) + BigInt(z1.value2() + string(mid, '0')) + z0;
+//    return result;
+//}
 
 int main() {
     try {
@@ -163,14 +198,15 @@ int main() {
         BigInt minus2 = b - a;
         cout << "a-b:" << minus1 << endl;
         cout << "b-a:" << minus2 << endl;
-        BigInt num1 = BigInt("789");
-        BigInt num2 = BigInt("987");
-        BigInt result = multi(num1, num2);
+        BigInt num1 = BigInt("123456789");
+        BigInt num2 = BigInt("987654321");
+        BigInt result = num1 * num2;
+        // Question: 123456789 * 987654321
+        // result: 121932631112635269
         cout << "num1*num2:" << result << endl;
     }
     catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
     }
-
     return 0;
 }
