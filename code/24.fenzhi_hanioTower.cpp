@@ -2,7 +2,7 @@
 #include<vector>
 using namespace std;
 int the_count = 0;
-// 使用结构体来标记柱子
+// 使用结构体来标记柱子（虽然柱子并不叫bullet，但是不要在意这些细节啦^o^
 struct TheBullet {
 	string b_name;
 	vector<int> b_value;
@@ -32,7 +32,8 @@ struct TheBullet {
 };
 void move(TheBullet& src, TheBullet& tar) {
 	the_count += 1;
-	cout << "move from " << src.b_name << " to " << tar.b_name << endl;
+	// 有没有不那么冗杂的方法来标记src和target的name
+	// cout << "move from " << src.b_name << " to " << tar.b_name << endl;
 	int temp = src.back();
 	src.pop_back();
 	tar.push_back(temp);
