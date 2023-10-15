@@ -1,4 +1,4 @@
-// Task: 子集
+// Task: 子集（其中total可通过target减法省略
 #include<iostream>
 #include<vector>
 using namespace std;
@@ -9,6 +9,7 @@ void backtrack(vector<int>& nums, vector<int>& state, int total, vector<vector<i
 	}
 	for (int i = 0; i < nums.size(); i++) {
 		if (total + nums[i] > target) {
+			// 因为没有排序，所以并不能断定i以后的元素是不是符合要求，所以continue，而排序之后因为已知后面都不满足，因此break
 			continue;
 		}
 		state.push_back(nums[i]);

@@ -1,50 +1,46 @@
-// 省略了total参数，使用target的减法代替；使用排序，确保无重复序列
+// Task: 子集
 #include<iostream>
 #include<vector>
 #include<algorithm>
 using namespace std;
-
-/* 回溯算法：子集和 I */
-void backtrack(vector<int>& state, int target, vector<int>& choices, int start, vector<vector<int>>& res) {
-    // 子集和等于 target 时，记录解(减去了total参数）
-    if (target == 0) {
-        res.push_back(state);
-        return;
-    }
-    // 遍历所有选择
-    // 剪枝二：从 start 开始遍历，避免生成重复子集
-    for (int i = start; i < choices.size(); i++) {
-        // 剪枝一：若子集和超过 target ，则直接结束循环
-        // 这是因为数组已排序，后边元素更大，子集和一定超过 target
-        if (target - choices[i] < 0) {
-            break;
-        }
-        // 尝试：做出选择，更新 target, start
-        state.push_back(choices[i]);
-        // 进行下一轮选择
-        backtrack(state, target - choices[i], choices, i, res);
-        // 回退：撤销选择，恢复到之前的状态
-        state.pop_back();
-    }
+void backtrack(vector<int>& nums, vector<int>& state, vector<vector<int>>& res, int target, int start) {
+	if (target == 0) {
+		res.push_back(state);
+		return;
+	}
+    // start起始元素，剪枝操作，避免重复
+	for (int i = start; i < nums.size(); i++) {
+		// 剪枝操作,因为已排序，因此不需要continue，直接break
+        if (target - nums[i] < 0) {
+			break;
+		}
+		// 剪枝四：如果该元素与左边元素相等，说明该搜索分支重复，直接跳过
+		if (i > start && nums[i] == nums[i - 1]) {
+			// 实质上这里可以在之前就对num做预处理，确保num中无重复元素
+			continue;
+		}
+		state.push_back(nums[i]);
+		backtrack(nums, state,  res, target-nums[i], i);  // backtrack从i开始，i之前的不用再选了
+		state.pop_back();
+	}
+	return;
 }
-
-/* 求解子集和 I */
-vector<vector<int>> subsetSumI(vector<int>& nums, int target) {
-    vector<int> state;              // 状态（子集）
-    sort(nums.begin(), nums.end()); // 对 nums 进行排序
-    int start = 0;                  // 遍历起始点
-    vector<vector<int>> res;        // 结果列表（子集列表）
-    backtrack(state, target, nums, start, res);
-    return res;
+vector<vector<int>> SubSetSum(vector<int> nums, int target) {
+	vector<int> state;
+	vector<vector<int>> res;
+	int start = 0;
+	sort(nums.begin(), nums.end());
+	backtrack(nums, state, res, target, start);
+	return res;
 }
-
 int main() {
-    vector<int> nums{ 2,3,4,5 };
-    int target = 9;
-    vector<vector<int>> result = subsetSumI(nums, target);
-    for (vector<int> each_vector : result) {
-        for (int each : each_vector)
-            cout << each << " ";
-        cout << endl;
-    }
+	vector<int> nums{ 2,3,2,4,5 };
+	int target = 9;
+	vector<vector<int>> result = SubSetSum(nums, target);
+	for (vector<int> each_vector : result) {
+		for (int each : each_vector)
+			cout << each << " ";
+		cout << endl;
+	}
+	cout << "length:" << result.size();
 }
