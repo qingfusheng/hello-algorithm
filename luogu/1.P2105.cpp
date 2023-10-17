@@ -1,7 +1,8 @@
-// 还是K皇后
+// 题目名称：还是K皇后
 // 题目来源：洛谷
 // 题目难度：普及/提高−
 // 题目链接：https://www.luogu.com.cn/problem/P2105
+// 题目思路：主对角线和反对角线如何用数组表示
 // 备注：不加O2优化会TLE，加了O2优化就过了
 #include<iostream>
 #include<vector>
