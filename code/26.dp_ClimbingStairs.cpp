@@ -99,10 +99,18 @@ int climbingStairsDPComp(int n) {
 	}
 	return b;
 }
+// DP的一种简化写法
+int climbingStairsDPComp2(int n)
+{
+    int a = 1, b = 2;
+    while (--n)
+        b += a, a = b - a; // 使用两行实现交换语句
+    return a;
+}
 
 
 int main() {
-	int num = 40;
+	int num = 20;
 	std::chrono::system_clock::time_point start, end;
 	start = std::chrono::system_clock::now();
 	int result1 = ClimbingStairs1(num);
