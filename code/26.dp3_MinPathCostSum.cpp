@@ -7,6 +7,7 @@ return: 最小路径和
 #include<algorithm>
 #include<chrono>
 using namespace std;
+// Example DP
 int minPathSumDP(vector<vector<int>>& grid){
     int n = grid.size(), m = grid[0].size();
     vector<vector<int>> dp(n, vector<int>(m));
@@ -22,6 +23,23 @@ int minPathSumDP(vector<vector<int>>& grid){
     }
     return dp[n-1][m-1];
 }
+// Example DP(空间压缩版,n*m -> m)
+int minPathSumDPcomp(vector<vector<int>>& grid){
+    int n = grid.size(), m = grid[0].size();
+    vector<int> dp(m, 0);
+    dp[0] = grid[0][0];
+    for(int i=1;i<m;i++)
+        dp[i] = dp[i-1]+grid[0][i];
+    for(int i=1;i<n;i++){
+        dp[0] = dp[0]+grid[i][0];
+        for(int j=1;j<m;j++){
+            dp[j] = min(dp[j-1], dp[j])+grid[i][j];
+        }
+    }
+    return dp[m-1];
+
+}
+// 我自己写的(if很多，听说if越多代码越lan)
 int minPathSumDP2(vector<vector<int>>& grid){
     int n = grid.size(), m=grid[0].size();
     vector<vector<int>> dp(n, vector<int>(m));
@@ -55,5 +73,9 @@ int main(){
     int result2 = minPathSumDP(grid);
     end = std::chrono::system_clock::now();
     cout<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<endl;
-    cout<<"result1:"<<result1<<",result2:"<<result2<<endl;
+    start = std::chrono::system_clock::now();
+    int result3 = minPathSumDPcomp(grid);
+    end = std::chrono::system_clock::now();
+    cout<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<endl;
+    cout<<"result1:"<<result1<<",result2:"<<result2<<",result3:"<<result3<<endl;
 }
