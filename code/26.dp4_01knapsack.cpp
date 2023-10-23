@@ -20,6 +20,15 @@ int knapsackDP(vector<int>& wgt, vector<int>& val, int cap){
 }
 /* 0-1 背包：空间优化后的动态规划 */
 int knapsackDPComp(vector<int> &wgt, vector<int> &val, int cap) {
+    /*横坐标为i，纵坐标为c
+         0   1   2   3   4   5 
+     0   0   0   0   0   0   0   
+     1   0   5   5   5   5   5
+     2   0   5  12  17  17  17
+     3   0   5  12  17  22  27
+     4   0   5  12  17  22  26
+     5   0   5  12  17  22  24
+    */
     int n = wgt.size();
     // 为什么这里从正序到逆序就可以将dp从二维缩减到一维
     vector<int> dp(cap + 1, 0);
@@ -31,6 +40,7 @@ int knapsackDPComp(vector<int> &wgt, vector<int> &val, int cap) {
                 dp[c] = dp[c];
             }else{
                 cout<<"选择不装的价值:"<<dp[c]<<",VS选择装的价值:"<<dp[c-wgt[i-1]]+val[i-1];
+                // 这里wgt和val的下标都是i-1是因为，这两个列表是从0开始的，而dp的横纵坐标是从1开始的
                 dp[c] = max(dp[c], dp[c-wgt[i-1]]+val[i-1]);
                 cout<<",结果价值为："<<dp[c]<<endl;
             }
