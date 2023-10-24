@@ -1,3 +1,4 @@
+// 01背包默认的条件是：每样物品只有一个（只能装一次
 #include<iostream>
 #include<vector>
 #include<algorithm>
@@ -23,31 +24,21 @@ int knapsackDPComp(vector<int> &wgt, vector<int> &val, int cap) {
     /*横坐标为i，纵坐标为c
          0   1   2   3   4   5 
      0   0   0   0   0   0   0   
-     1   0   5   5   5   5   5
-     2   0   5  12  17  17  17
-     3   0   5  12  17  22  27
-     4   0   5  12  17  22  26
-     5   0   5  12  17  22  24
+     1   0   5   5   5   5   5(05,1+0+0的策略)
+     2   0   5  12  17  17  17(17,2+1+0的策略)
+     3   0   5  12  17  21  27(27,3+2+1的策略)
+     4   0   5  12  17  21  27(26,4+1+0的策略)
+     5   0   5  12  17  21  27(24,5+0+0的策略)
     */
     int n = wgt.size();
-    // 为什么这里从正序到逆序就可以将dp从二维缩减到一维
-    vector<int> dp(cap + 1, 0);
-    for(int i=1; i<=n; i++){
+    vector<int> dp(cap+1, 0);
+    for(int i=1;i<=n;i++){
         for(int c=cap;c>=1;c--){
-            cout<<"i:"<<i<<",c:"<<c<<endl;
-            if(wgt[i-1] > c){
-                cout<<"背包容量小了装不下了:"<<wgt[i-1]<<endl;
-                dp[c] = dp[c];
-            }else{
-                cout<<"选择不装的价值:"<<dp[c]<<",VS选择装的价值:"<<dp[c-wgt[i-1]]+val[i-1];
-                // 这里wgt和val的下标都是i-1是因为，这两个列表是从0开始的，而dp的横纵坐标是从1开始的
+            if(wgt[i-1]<=c){
+                // 倒序遍历c的原因是dp[c]会用到c之前的值
                 dp[c] = max(dp[c], dp[c-wgt[i-1]]+val[i-1]);
-                cout<<",结果价值为："<<dp[c]<<endl;
             }
         }
-        for(int c=cap;c>=0;c--)
-            cout<<c<<":"<<dp[c]<<" ,";
-        cout<<endl;
     }
     return dp[cap];
     // dp[50] = max([wgt:10]+dp[40], [wgt:20]+dp[30])

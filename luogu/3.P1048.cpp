@@ -2,7 +2,7 @@
 // 题目来源：洛谷
 // 题目难度：普及-
 // 题目链接：https://www.luogu.com.cn/problem/P1048
-// 题目思路：动态规划
+// 题目思路：动态规划，01背包（不重复选择
 #include<iostream>
 #include<vector>
 using namespace std;
